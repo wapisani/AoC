@@ -17,11 +17,11 @@ with open("input_Day3.txt",'r') as aoc_input:
 # right 3, down 1, 257 trees
 # right 5, down 1, 64 trees
 # right 7, down 1, 47 trees
-# right 1, down 2, 38 trees
+# right 1, down 2, 37 trees
 right = 1
 down = 2
 
-# The number of times going down is current 1 (but I'm guessing it will change)
+# The number of times going down is currently 1 (but I'm guessing it will change)
 # so the true number of rows is the length of the tree map divided by down
 nrows = len(tree_map)/down
 ncols = len(tree_map[0])
