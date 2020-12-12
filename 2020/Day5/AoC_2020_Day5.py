@@ -4,7 +4,7 @@ Created on Sat Dec 12 14:24:09 2020
 
 @author: wapisani
 """
-import os,math
+import os
 
 os.chdir(r"F:\Documents\Programming\AoC\2020\Day5")
 
