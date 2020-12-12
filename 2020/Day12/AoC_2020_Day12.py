@@ -10,7 +10,7 @@ https://adventofcode.com/2020/day/12#part2
 
 import os
 
-os.chdir(r"/home/wapisani/Documents/Programming/AoC/2020/Day12")
+os.chdir(r"F:\Documents\Programming\AoC\2020\Day12")
 
 with open("input_Day12.txt",'r') as aoc_input:
     directions = aoc_input.read().split('\n')
@@ -102,7 +102,7 @@ for direction in directions:
         west_east_coord -= value
         
 manhattan_dist = abs(north_south_coord) + abs(west_east_coord)
-print(f"The Manhattan distance is {manhattan_dist}")
+print(f"In part 1, the Manhattan distance is {manhattan_dist}")
 
 # I can use a rotation matrix for the rotation of the way point
 # about the ship.
@@ -112,3 +112,55 @@ print(f"The Manhattan distance is {manhattan_dist}")
 # The ship will have its own coordinates as a numpy array
 # The rotation may be tricky, it might be easier to write out a test scenario on paper
 # I will also need a set of coordinates showing the distance from the waypoint to the ship
+import numpy as np
+waypoint_coords = np.array([[10],[1]]) # East, North. E is +, N is +
+wp_rel2_ship = np.array([[10],[1]])
+ship_coords = np.array([[0],[0]])
+
+for direction in directions:
+    if direction == '':
+        continue
+    action = direction[0]
+    value = int(direction[1:])
+    
+    if action == 'N':
+        waypoint_coords[1,0] += value
+        wp_rel2_ship = waypoint_coords - ship_coords
+    elif action == 'S':
+        waypoint_coords[1,0] -= value
+        wp_rel2_ship = waypoint_coords - ship_coords
+    elif action == 'E':
+        waypoint_coords[0,0] += value
+        wp_rel2_ship = waypoint_coords - ship_coords
+    elif action == 'W':
+        waypoint_coords[0,0] -= value
+        wp_rel2_ship = waypoint_coords - ship_coords
+    elif action == 'L': # counter-clockwise rotation
+        angle = value*np.pi/180 # angle in radians
+        rotation_matrix = np.array([[np.cos(angle),-1*np.sin(angle)],\
+                             [np.sin(angle),np.cos(angle)]])
+        wp_rel2_ship = np.matmul(rotation_matrix,wp_rel2_ship)
+        waypoint_coords = ship_coords + wp_rel2_ship
+    elif action == 'R': # clockwise rotation
+        angle = value*np.pi/180
+        rotation_matrix = np.array([[np.cos(angle),np.sin(angle)],\
+                                    [-1*np.sin(angle),np.cos(angle)]])
+        wp_rel2_ship = np.matmul(rotation_matrix,wp_rel2_ship)
+        waypoint_coords = ship_coords + wp_rel2_ship
+    elif action == 'F':
+        ship_coords = ship_coords + wp_rel2_ship * value
+        waypoint_coords = waypoint_coords + wp_rel2_ship * value
+
+manhattan_dist_pt2 = abs(ship_coords[0,0]) + abs(ship_coords[1,0])
+print(f"In part 2, the Manhattan distance is {manhattan_dist_pt2}")
+        
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
