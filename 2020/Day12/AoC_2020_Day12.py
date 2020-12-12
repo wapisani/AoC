@@ -4,8 +4,9 @@
 Created on Fri Dec 11 23:31:55 2020
 
 @author: wapisani
-"""
 
+https://adventofcode.com/2020/day/12#part2
+"""
 
 import os
 
@@ -14,20 +15,6 @@ os.chdir(r"/home/wapisani/Documents/Programming/AoC/2020/Day12")
 with open("input_Day12.txt",'r') as aoc_input:
     directions = aoc_input.read().split('\n')
     
-
-    # Action N means to move north by the given value.
-    # Action S means to move south by the given value.
-    # Action E means to move east by the given value.
-    # Action W means to move west by the given value.
-    # Action L means to turn left the given number of degrees.
-    # Action R means to turn right the given number of degrees.
-    # Action F means to move forward by the given value in the direction the ship is currently facing.
-# The ship starts by facing east. Only the L and R actions change the direction the ship is facing. (That is, if the ship is facing east and the next instruction is N10, the ship would move north 10 units, but would still move east if the following action were F.)
-
-# At the end of these instructions, the ship's Manhattan distance (sum of the absolute values of its east/west position and its north/south position) from its starting position is 17 + 8 = 25.
-
-# Figure out where the navigation instructions lead. What is the Manhattan distance between that location and the ship's starting position?
-
 dir_facing = 'E' # Ship starts by facing east
 west_east_coord = 0
 north_south_coord = 0
@@ -116,3 +103,12 @@ for direction in directions:
         
 manhattan_dist = abs(north_south_coord) + abs(west_east_coord)
 print(f"The Manhattan distance is {manhattan_dist}")
+
+# I can use a rotation matrix for the rotation of the way point
+# about the ship.
+# https://en.wikipedia.org/wiki/Transformation_matrix#Rotation
+# The waypoint moves relative to the ship
+# The waypoint will have its own coordinates perhaps as a two-element numpy array for easy matrix multiplication
+# The ship will have its own coordinates as a numpy array
+# The rotation may be tricky, it might be easier to write out a test scenario on paper
+# I will also need a set of coordinates showing the distance from the waypoint to the ship
