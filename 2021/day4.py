@@ -115,3 +115,75 @@ for value in numbers:
 # When the sum of the array matches the number of boards, stop and print that 
 # board. Or just print every board win, but stop the code. The last one to print
 # will be the last one to win.        
+
+
+# Convert to numpy arrays
+boards_np = np.zeros((len(boards),5,5)) # First number is actually z-dimension
+boards_bingo = np.zeros((len(boards),5,5))
+board_win_counter = np.zeros(len(boards))
+for z,board in enumerate(boards):
+    boards_np[z,:,:] = np.asarray(board)
+
+# Start reading off the numbers
+break_flag = False
+for value in numbers:
+    
+    for index,board in enumerate(boards_np):
+        if value in board:
+            r,c = np.where(board==value)
+            boards_bingo[index,r,c] = 1 # 1 is a mark
+            
+        # Check for bingo's
+        # In this part bingo's only count if they are rows or columns.
+        # Since I'm using 1's for marks, there will be a bingo if there is a sum
+        # of 5 for any given row or column
+        # Check rows
+        board_marks = boards_bingo[index,:,:]
+        for row in range(5):
+            sum_value = np.sum(board_marks[row,:])
+            if sum_value > 4: # Winner!!
+                board_win_counter[index] = 1
+                print(f'board {board} is a winner at row {row}')
+                print(f'{board_marks}')
+                print('Now summing all unmarked numbers...')
+                unmark_row, unmark_col = np.where(board_marks==0)
+                unmark_sum = 0
+                for index,unmark in enumerate(unmark_row):
+                    x = unmark
+                    y = unmark_col[index]
+                    unmark_sum += board[x,y]
+                print(f'The sum of all unmarked numbers is {unmark_sum}')
+                print(f'The number that was just called is {value}.')
+                print(f'Your final score is {unmark_sum*value}.')
+                if np.sum(board_win_counter) > len(boards) -1:
+                    print('The last board has won!')
+                    break_flag = True
+                    break
+                
+        
+        for col in range(5):
+            sum_value = np.sum(board_marks[:,col])
+            if sum_value > 4: # Winner!!
+                board_win_counter[index] = 1
+                print(f'board {board} is a winner at column {col}')
+                print(f'{board_marks}')
+                print('Now summing all unmarked numbers...')
+                unmark_row, unmark_col = np.where(board_marks==0)
+                unmark_sum = 0
+                for index,unmark in enumerate(unmark_row):
+                    x = unmark
+                    y = unmark_col[index]
+                    unmark_sum += board[x,y]
+                print(f'The sum of all unmarked numbers is {unmark_sum}')
+                print(f'The number that was just called is {value}.')
+                print(f'Your final score is {unmark_sum*value}.')
+                if np.sum(board_win_counter) > len(boards) -1:
+                    print('The last board has won!')
+                    break_flag = True
+                    break
+        
+        if break_flag:
+            break
+    if break_flag:
+        break
+            
