@@ -109,4 +109,9 @@ for value in numbers:
         break
             
      
-        
+### Part 2 ###
+# To find the last board that will win, create an array of zeros that matches
+# the number of boards. Change each zero to a 1 when that board wins.
+# When the sum of the array matches the number of boards, stop and print that 
+# board. Or just print every board win, but stop the code. The last one to print
+# will be the last one to win.        
