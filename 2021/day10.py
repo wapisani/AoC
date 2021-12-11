@@ -10,12 +10,12 @@ import os
 directory = r'F:\Documents\Programming\AoC\2021'
 os.chdir(directory)
 
-# with open('input_day10.txt','r') as handle:
-#     data = [line.strip() for line in handle.readlines()]
+with open('input_day10.txt','r') as handle:
+    data = [line.strip() for line in handle.readlines()]
    
 
-with open('sample_day10.txt','r') as handle:
-    data = [line.strip() for line in handle.readlines()]
+# with open('sample_day10.txt','r') as handle:
+#     data = [line.strip() for line in handle.readlines()]
     
 lookup_table = {')': 3,
                 ']': 57,
@@ -50,31 +50,36 @@ for char in illegal_chars:
 print(f'The total syntax error score is {points}')
     
 ### Part 2 ###
-
-# Try using the stack method for this part
-# The exact sequence matters
-left_count = {'[': 0, '(': 0, '{': 0, '<': 0}
-right_count = {']': 0, ')': 0, '}': 0, '>': 0}
 sequences = []
-for line in data:
-    left_count = {'[': 0, '(': 0, '{': 0, '<': 0}
-    right_count = {']': 0, ')': 0, '}': 0, '>': 0}
+for line in data[:]:
+    stack = []
+    seq = ''
     for char in line:
         if char in left:
-            left_count[char] += 1
+            stack.append(char)
         elif char in right:
-            right_count[char] += 1
+            top = stack[-1]
+            i = left.index(top)
+            if char == right[i]:
+                stack.pop() # Pop all matches
             
-    count_diff = []
-    count_diff.append(left_count['[']-right_count[']'])
-    count_diff.append(left_count['(']-right_count[')'])   
-    count_diff.append(left_count['{']-right_count['}'])   
-    count_diff.append(left_count['<']-right_count['>'])  
-    seq = ''
-    seq += ']'*count_diff[0]
-    seq += ')'*count_diff[1]
-    seq += '}'*count_diff[2]
-    seq += '>'*count_diff[3]
+    while stack: # Unbalanced brackets are the only thing left
+        top = stack[-1]
+        i = left.index(top)
+        seq += right[i]
+        stack.pop()
+            
     sequences.append(seq)
+            
+p2_lookup = {')': 1, ']': 2, '}': 3, '>': 4}
+scores = []
+for seq in sequences:
+    score = 0
+    for char in seq:
+        score *= 5
+        score += p2_lookup[char]
+    scores.append(score)
 
+middle_score = sorted(scores)[len(scores)//2]
+print(f'The middle score is {middle_score}')
         
