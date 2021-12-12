@@ -29,7 +29,7 @@ def bfs(flashed_loc): # local_minima is tuple of (row,col) where the local minim
         
         node = queue.pop(0)
         row,col = node
-        energy_grid[row,col] += 1
+        
         
         if energy_grid[row,col] > 9:
             n_flashes += 1
@@ -139,6 +139,14 @@ for i,line in enumerate(data):
 flashes_list = [] # count of flashes per step    
 for step in range(100):
     n_flashes = 0
+    energy_grid += 1 # increase energy of all octopi 1
+    flash_locs = np.where(energy_grid > 9)
+    if len(flash_locs[0]) > 0:
+        flash_rows = [row for row in flash_locs[0]]
+        flash_cols = [col for col in flash_locs[1]]
+        # Now write code to feed these into the bfs
+        # and the bfs will search around the ones that flashed
+        # for any more that may flash. Remember to increment upon flash
     for row in range(nrows):
         for col in range(ncols):
             flashed, nflash = bfs((row,col))
