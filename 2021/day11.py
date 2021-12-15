@@ -8,7 +8,8 @@ Created on Fri Dec 10 22:58:59 2021
 import os
 import numpy as np
 
-directory = r'F:\Documents\Programming\AoC\2021'
+# directory = r'F:\Documents\Programming\AoC\2021'
+directory = r'/Users/wapisani/Documents/Programming/AoC/2021'
 os.chdir(directory)
 
 # with open('input_day11.txt','r') as handle:
@@ -34,7 +35,7 @@ def bfs(flash_rows,flash_cols): # flashed_loc is a li is tuple of (row,col) wher
         row,col = node
         
         
-        if energy_grid[row,col] > 9:
+        if energy_grid[row,col] == 10:
             n_flashes += 1
             flashed.append((row,col))
         
@@ -43,114 +44,180 @@ def bfs(flash_rows,flash_cols): # flashed_loc is a li is tuple of (row,col) wher
             visited.append(node)
             neighbors = []
             if row == 0 and col == 0: # upper-left
-                right = energy_grid[row,col+1]
-                down = energy_grid[row+1,col]
-                if right > 8:
-                    neighbors.append((row,col+1))
+                right = (row,col+1)
+                down = (row,col+1)
+                energy_grid[right] += 1
+                energy_grid[down] += 1
+                righte = energy_grid[row,col+1]
+                downe = energy_grid[row+1,col]
+                if righte == 10:
+                    neighbors.append(right)
                     
-                if down > 8:
-                    neighbors.append((row+1,col))
+                if downe == 10:
+                    neighbors.append(down)
                     
             elif row == 0 and col == n_cols-1: # upper-right
-                left = energy_grid[row,col-1]
-                down = energy_grid[row+1,col]
-                if left > 8:
-                    neighbors.append((row,col-1))
+                left = (row,col-1)
+                down = (row+1,col)
+                energy_grid[left] += 1
+                energy_grid[down] += 1
+                lefte = energy_grid[left]
+                downe = energy_grid[down]
+                if lefte == 10:
+                    neighbors.append(left)
                     
+                if downe == 10:
+                    neighbors.append(down)
                     
-                if down > 8:
-                    neighbors.append((row+1,col))
             elif row == n_rows-1 and col == n_cols-1: # lower-right
-                up = energy_grid[row-1,col]
-                left = energy_grid[row,col-1]
-                if left > 8:
-                    neighbors.append((row,col-1))
-                if up > 8:
-                    neighbors.append((row-1,col))
+                up = (row-1,col)
+                left = (row,col-1)
+                energy_grid[up] += 1
+                energy_grid[left] += 1
+                upe = energy_grid[up]
+                lefte = energy_grid[left]
+                if lefte == 10:
+                    neighbors.append(left)
+                    
+                if upe == 10:
+                    neighbors.append(up)
+                    
             elif row == n_rows-1 and col == 0: # lower-left
-                up = energy_grid[row-1,col]
-                right = energy_grid[row,col+1]
-                if up > 8:
-                    neighbors.append((row-1,col))
-                if right > 8:
-                    neighbors.append((row,col+1))
+                up = (row-1,col)
+                right = (row,col+1)
+                energy_grid[up] += 1
+                energy_grid[right] += 1
+                upe = energy_grid[up]
+                righte = energy_grid[right]
+                if upe == 10:
+                    neighbors.append(up)
+                if righte == 10:
+                    neighbors.append(right)
+                    
             elif row == 0 and (col != 0 or col != n_cols-1): # top row
-                left = energy_grid[row,col-1]
-                right = energy_grid[row,col+1]
-                down = energy_grid[row+1,col]
-                if left > 8:
-                    neighbors.append((row,col-1))
-                if right > 8:
-                    neighbors.append((row,col+1))
-                if down > 8:
-                    neighbors.append((row+1,col))
+                left = (row,col-1)
+                right = (row,col+1)
+                down = (row+1,col)
+                energy_grid[left] += 1
+                energy_grid[right] += 1
+                energy_grid[down] += 1
+                lefte = energy_grid[left]
+                righte = energy_grid[right]
+                downe = energy_grid[down]
+                if lefte == 10:
+                    neighbors.append(left)
+                if righte == 10:
+                    neighbors.append(right)
+                if downe == 10:
+                    neighbors.append(down)
             elif row == n_rows-1 and (col != 0 or col != n_cols-1): # bottom-row
-                left = energy_grid[row,col-1]
-                right = energy_grid[row,col+1] 
-                up = energy_grid[row-1,col]
-                if left > 8:
-                    neighbors.append((row,col-1))
-                if right > 8:
-                    neighbors.append((row,col+1))
-                if up > 8:
-                    neighbors.append((row-1,col))
+                left = (row,col-1)
+                right = (row,col+1)
+                up = (row-1,col)
+                energy_grid[left] += 1
+                energy_grid[right] += 1
+                energy_grid[up] += 1
+                lefte = energy_grid[left]
+                righte = energy_grid[right] 
+                upe = energy_grid[up]
+                if lefte == 10:
+                    neighbors.append(left)
+                if righte == 10:
+                    neighbors.append(right)
+                if upe == 10:
+                    neighbors.append(up)
+                    
             elif col == 0 and (row != 0 or row != n_rows-1): # left col, but not top or bottom
-                right = energy_grid[row,col+1] 
-                up = energy_grid[row-1,col]
-                down = energy_grid[row+1,col]
-                up_right = energy_grid[row-1,col+1]
-                down_right = energy_grid[row+1,col+1]
-                if right > 8:
-                    neighbors.append((row,col+1))
-                if down > 8:
-                    neighbors.append((row+1,col))
-                if up > 8:
-                    neighbors.append((row-1,col))
-                if up_right > 8:
-                    neighbors.append((row-1,col+1))
-                if down_right > 8:
-                    neighbors.append((row+1,col+1))
-            elif col == n_cols-1 and (row != 0 or row != n_rows-1): # right col, but not top or bottom
-                up = energy_grid[row-1,col]
-                down = energy_grid[row+1,col]
-                left = energy_grid[row,col-1]
-                up_left = energy_grid[row-1,col-1]
-                down_left = energy_grid[row+1,col-1]
-                if up > 8:
-                    neighbors.append((row-1,col))
-                if down > 8:
-                    neighbors.append((row+1,col))
-                if left > 8:
-                    neighbors.append((row,col-1))
-                if up_left > 8:
-                    neighbors.append((row-1,col-1))
-                if down_left > 8:
-                    neighbors.append((row+1,col-1))
+                right = (row,col+1)
+                up = (row-1,col)
+                down = (row+1,col)
+                up_right = (row-1,col+1)
+                down_right = (row+1,col+1)
+                energy_grid[right] += 1
+                energy_grid[down] += 1
+                energy_grid[up_right] += 1
+                energy_grid[down_right] += 1
+                righte = energy_grid[right] 
+                upe = energy_grid[up]
+                downe = energy_grid[down]
+                up_righte = energy_grid[up_right]
+                down_righte = energy_grid[down_right]
+                if righte == 10:
+                    neighbors.append(right)
+                if downe == 10:
+                    neighbors.append(down)
+                if upe == 10:
+                    neighbors.append(up)
+                if up_righte == 10:
+                    neighbors.append(up_right)
+                if down_righte == 10:
+                    neighbors.append(down_right)
+                    
+            elif col == n_cols-1 and (row != 0 or row != n_rows-1): # right col, but not top or bottom 
+                up = (row-1,col)
+                down = (row+1,col)
+                left = (row,col-1)
+                up_left = (row-1,col-1)
+                down_left = (row+1,col-1)
+                energy_grid[up] += 1
+                energy_grid[down] += 1
+                energy_grid[left] += 1
+                energy_grid[up_left] += 1
+                energy_grid[down_left] += 1
+                upe = energy_grid[up]
+                downe = energy_grid[down]
+                lefte = energy_grid[left]
+                up_lefte = energy_grid[up_left]
+                down_lefte = energy_grid[down_left]
+                if upe == 10:
+                    neighbors.append(up)
+                if downe == 10:
+                    neighbors.append(down)
+                if lefte == 10:
+                    neighbors.append(left)
+                if up_lefte == 10:
+                    neighbors.append(up_left)
+                if down_lefte == 10:
+                    neighbors.append(down_left)
+                    
             else: # somewhere not on the edges
-                up = energy_grid[row-1,col]
-                down = energy_grid[row+1,col]
-                left = energy_grid[row,col-1]
-                right = energy_grid[row,col+1] 
-                up_right = energy_grid[row-1,col+1]
-                up_left = energy_grid[row-1,col-1]
-                down_right = energy_grid[row+1,col+1]
-                down_left = energy_grid[row+1,col-1]
-                if up > 8:
-                    neighbors.append((row-1,col))
-                if down > 8:
-                    neighbors.append((row+1,col))
-                if left > 8:
-                    neighbors.append((row,col-1))
-                if right > 8:
-                    neighbors.append((row,col+1))
-                if up_right > 8:
-                    neighbors.append((row-1,col+1))
-                if up_left > 8:
-                    neighbors.append((row-1,col-1))
-                if down_right > 8:
-                    neighbors.append((row+1,col+1))
-                if down_left > 8:
-                    neighbors.append((row+1,col-1))
+                up = (row-1,col)
+                down = (row+1,col)
+                left = (row,col-1)
+                right = (row,col+1)
+                up_left = (row-1,col-1)
+                up_right = (row-1,col+1)
+                down_left = (row+1,col-1)
+                down_right = (row+1,col+1)
+                directions = [up,down,left,right,up_left,up_right,
+                              down_left,down_right]
+                for direction in directions:
+                    energy_grid[direction] += 1
+                    
+                upe = energy_grid[up]
+                downe = energy_grid[down]
+                lefte = energy_grid[left]
+                righte = energy_grid[right] 
+                up_righte = energy_grid[up_right]
+                up_lefte = energy_grid[up_left]
+                down_righte = energy_grid[down_right]
+                down_lefte = energy_grid[down_left]
+                if upe == 10:
+                    neighbors.append(up)
+                if downe == 10:
+                    neighbors.append(down)
+                if lefte == 10:
+                    neighbors.append(left)
+                if righte == 10:
+                    neighbors.append(right)
+                if up_righte == 10:
+                    neighbors.append(up_right)
+                if up_lefte == 10:
+                    neighbors.append(up_left)
+                if down_righte == 10:
+                    neighbors.append(down_right)
+                if down_lefte == 10:
+                    neighbors.append(down_left)
                 
             for neighbor in neighbors:
                 queue.append(neighbor)
@@ -168,15 +235,14 @@ flashes_list = [] # count of flashes per step
 for step in range(100):
     n_flashes = 0
     energy_grid += 1 # increase energy of all octopi 1
-    flash_locs = np.where(energy_grid > 9)
+    flash_locs = np.where(energy_grid == 10)
     if len(flash_locs[0]) > 0:
         flash_rows = [row for row in flash_locs[0]]
         flash_cols = [col for col in flash_locs[1]]
         flashed,nflash = bfs(flash_rows,flash_cols)
         n_flashes += nflash
-        for f in flashed:
-            energy_grid[f] = 0
-        
+        flash_locs = np.where(energy_grid >= 10)
+        energy_grid[flash_locs]
         flashes_list.append(n_flashes)
         
 print(f'In 100 steps, there were {sum(flashes_list)} flashes.')
