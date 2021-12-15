@@ -18,12 +18,15 @@ os.chdir(directory)
 with open('sample_day11.txt','r') as handle:
     data = [line.strip() for line in handle.readlines()]
 
-def bfs(flashed_loc): # local_minima is tuple of (row,col) where the local minima is
-    
+def bfs(flash_rows,flash_cols): # flashed_loc is a li is tuple of (row,col) where the local minima is
+    queue = []
+    for index,row in enumerate(flash_rows):
+        col = flash_cols[index]
+        queue.append((row,col))
     visited = []
     n_flashes = 0
     flashed = []
-    queue = [flashed_loc]
+    
     n_rows,n_cols = energy_grid.shape
     while queue:
         
@@ -95,27 +98,43 @@ def bfs(flashed_loc): # local_minima is tuple of (row,col) where the local minim
                 right = energy_grid[row,col+1] 
                 up = energy_grid[row-1,col]
                 down = energy_grid[row+1,col]
+                up_right = energy_grid[row-1,col+1]
+                down_right = energy_grid[row+1,col+1]
                 if right > 8:
                     neighbors.append((row,col+1))
                 if down > 8:
                     neighbors.append((row+1,col))
                 if up > 8:
                     neighbors.append((row-1,col))
+                if up_right > 8:
+                    neighbors.append((row-1,col+1))
+                if down_right > 8:
+                    neighbors.append((row+1,col+1))
             elif col == n_cols-1 and (row != 0 or row != n_rows-1): # right col, but not top or bottom
                 up = energy_grid[row-1,col]
                 down = energy_grid[row+1,col]
                 left = energy_grid[row,col-1]
+                up_left = energy_grid[row-1,col-1]
+                down_left = energy_grid[row+1,col-1]
                 if up > 8:
                     neighbors.append((row-1,col))
                 if down > 8:
                     neighbors.append((row+1,col))
                 if left > 8:
                     neighbors.append((row,col-1))
+                if up_left > 8:
+                    neighbors.append((row-1,col-1))
+                if down_left > 8:
+                    neighbors.append((row+1,col-1))
             else: # somewhere not on the edges
                 up = energy_grid[row-1,col]
                 down = energy_grid[row+1,col]
                 left = energy_grid[row,col-1]
                 right = energy_grid[row,col+1] 
+                up_right = energy_grid[row-1,col+1]
+                up_left = energy_grid[row-1,col-1]
+                down_right = energy_grid[row+1,col+1]
+                down_left = energy_grid[row+1,col-1]
                 if up > 8:
                     neighbors.append((row-1,col))
                 if down > 8:
@@ -124,9 +143,18 @@ def bfs(flashed_loc): # local_minima is tuple of (row,col) where the local minim
                     neighbors.append((row,col-1))
                 if right > 8:
                     neighbors.append((row,col+1))
+                if up_right > 8:
+                    neighbors.append((row-1,col+1))
+                if up_left > 8:
+                    neighbors.append((row-1,col-1))
+                if down_right > 8:
+                    neighbors.append((row+1,col+1))
+                if down_left > 8:
+                    neighbors.append((row+1,col-1))
                 
             for neighbor in neighbors:
                 queue.append(neighbor)
+                
     return flashed, n_flashes
 
 nrows = len(data)
@@ -144,23 +172,11 @@ for step in range(100):
     if len(flash_locs[0]) > 0:
         flash_rows = [row for row in flash_locs[0]]
         flash_cols = [col for col in flash_locs[1]]
-        # Now write code to feed these into the bfs
-        # and the bfs will search around the ones that flashed
-        # for any more that may flash. Remember to increment upon flash
-    for row in range(nrows):
-        for col in range(ncols):
-            flashed, nflash = bfs((row,col))
-            n_flashes += nflash
-            for flash in flashed:
-                r,c = flash
-                energy_grid[r,c] = 0
-            
-                # call bfs here, return number of flashes
-                # Write a function called flash that will 
-                # increase the energy levels of the 
-                # 8 adjacent squares by 1 and then check 
-                # for any new octopi that can flash. Change
-                # the energy levels of any flashed to 0 before
-                # moving on. Maybe bfs would be useful?
-    flashes_list.append(n_flashes)
+        flashed,nflash = bfs(flash_rows,flash_cols)
+        n_flashes += nflash
+        for f in flashed:
+            energy_grid[f] = 0
+        
+        flashes_list.append(n_flashes)
+        
 print(f'In 100 steps, there were {sum(flashes_list)} flashes.')
