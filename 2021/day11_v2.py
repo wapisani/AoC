@@ -64,7 +64,7 @@ for i,line in enumerate(data):
         energy_grid[i,j] = int(char)
 
 flashes_list = [] # count of flashes per step    
-for step in range(100):
+for step in range(100): # part 1 is 100 steps
     n_flashes = 0
     
     energy_grid += 1 # increase energy of all octopi 1
@@ -95,3 +95,50 @@ for step in range(100):
     flashes_list.append(n_flashes)
     
 print(f'In 100 steps, there were {sum(flashes_list)} flashes.')
+
+energy_grid = np.zeros((nrows,ncols))
+for i,line in enumerate(data):
+    for j,char in enumerate(line):
+        energy_grid[i,j] = int(char)
+
+flashes_list = [] # count of flashes per step  
+simultaneous_flag = True
+step = 0
+while simultaneous_flag:
+    
+    n_flashes = 0
+    
+    energy_grid += 1 # increase energy of all octopi 1
+    flash_locs = np.where(energy_grid == 10)
+    # Now get the flash locations into a usable format
+    x = [value for value in flash_locs[0]]
+    y = [value for value in flash_locs[1]]
+    xy = []
+    for i,value in enumerate(x):
+        xy.append((value,y[i]))
+        
+    n_flashes += len(xy) # Get number of flashes for those that have flashed
+    
+    for flashed in xy:
+        
+        adjacentCells = getAdjacentCells(flashed, nrows, ncols)
+        for cell in adjacentCells:
+            i,j = cell
+            energy_grid[i,j] += 1
+            e = energy_grid[i,j]
+            if e == 10:
+                n_flashes += 1 # This should only count the number of adjacent cells that flash
+                xy.append((i,j))
+    
+    for flashed in xy:
+        i,j = flashed
+        energy_grid[i,j] = 0 # reset
+    # Check if all of the octopuses flashed simultaneously
+    # There are nrows * ncols number of octopuses so if the number of flashes
+    # is greater than nrows * ncols - 1 then they all flashed.    
+    if n_flashes > nrows*ncols -1:
+        simultaneous_flag = False
+    flashes_list.append(n_flashes)
+    step += 1
+    
+print(f'In {step} steps, all of the octopuses flashed simultaneously.')
