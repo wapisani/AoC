@@ -167,8 +167,8 @@ for i in range(xlen):
                         break
                     
                 numbers_with_symbols_adj.append(int(digits))
-                print(digits)
-                print(f"x: {i}, y: {j}")
+                # print(digits)
+                # print(f"x: {i}, y: {j}")
                 digits = ''
                 
                 
@@ -188,83 +188,62 @@ adj_to_indices = {'top_left': (-1,-1), 'top': (-1,0), 'top_right': (-1,1),
                   'left': (0,-1), 'right': (0,1),
                   'bottom_left': (1,-1), 'bottom': (1,0), 'bottom_right': (1,1)}
 
-import re
 
 gear_ratios = []
 skip_count = 0
+found_values = []
+gear_indices = [] # List of tuples (i,j), list of gear locations
 for i in range(xlen):
-    x = grid[i]
-    digits = ''
     for j in range(ylen):
-        first_num = 0
-        if skip_count > 0:
-            skip_count -= 1
-            continue
-        y = grid[i][j]
-        if y == '.' or y in symbols:
-            digits = ''
-            continue
-        elif y.isdigit():
-            digits += y
+        cell = grid[i][j]
+        if cell == '*':
+            gear_indices.append((i,j))
+
+for gear_ij in gear_indices:
+    gi, gj = gear_ij
+    adj = searchAdjacentGrid(grid, gi, gj)
+    found_digits = []
+    for key in adj:
+        value = adj[key]
+        if value.isdigit():
+            nij = adj_to_indices[key]
+            ni = gi + nij[0]
+            nj = gj + nij[1]
+            digits = [grid[ni][nj]]
             
-            # Search adjacent cells for '*'
-            adj_grid = searchAdjacentGrid(grid, i, j)
-            
-            # Get the indices of the '*' cell
-            symbol_flag = False
-            if '*' in adj_grid.values():
-                # search to the right for more digits of the first num
-                skip_count = 0
-                for k in range(j+1,ylen):
-                    cell = grid[i][k]
+            # Search for rest of digit
+            left = -1
+            while True:
+                if nj + left < 0:
+                    break
+                else:
+                    cell = grid[ni][nj + left]
                     if cell.isdigit():
-                        digits += cell
-                        skip_count += 1
+                        digits.insert(0,cell)
+                        left -= 1
                     else:
                         break
-                    
-                for key in adj_grid:
-                    value = adj_grid[key]
-                    if value == '*':
-                        indices = adj_to_indices[key]
+            
+            right = 1
+            while True:
+                if nj + right > len(grid[ni][:]) - 1:
+                    break
+                else:
+                    cell = grid[ni][nj + right]
+                    if cell.isdigit():
+                        digits.append(cell)
+                        right += 1
+                    else:
                         break
-                    
-                first_num = int(digits) 
-                # Use those indices to search the surrounding cells for 
-                # more digits
-                gear_i = i + indices[0]
-                gear_j = j + indices[1]
-                
-                gear_adj_grid = searchAdjacentGrid(grid, gear_i, gear_j)
-                
-                for key in gear_adj_grid:
-                    value = gear_adj_grid[key]
-                    if value.isdigit():
-                        digits_two = ''
-                        # Get indices of any numbers
-                        num_indicies = adj_to_indices[key]
-                        num_i = gear_i + num_indicies[0]
-                        num_j = gear_j + num_indicies[1]
-                        
-                        # search to the left
-                        cells = grid[num_i][num_j-2:num_j+2]
-                        digits_two = ''.join(cells)
-                        
-                        digits_two = re.sub(r'\.','',digits_two)
-                        digits_two = re.sub(r'\*','',digits_two)
-                        digits_two = re.sub(r'\&','',digits_two)
-                        digits_two = re.sub(r'\%','',digits_two)
-                        digits_two = re.sub(r'\/','',digits_two)
-                        digits_two = re.sub(r'\#','',digits_two)
-                        
-                        second_num = int(digits_two)
-                gear_ratios.append(first_num*second_num)
-                
+            
+            digits_str = ''.join(digits)
+            if digits_str in found_digits:
+                continue
+            else:
+                found_digits.append(digits_str)
+    if len(found_digits) == 2:
+        fv = '-'.join(found_digits)
+        found_values.append(fv)
+        gear_ratios.append(int(found_digits[0])*int(found_digits[1]))
+        
 print(f"Sum of the gear ratios is {sum(gear_ratios)}")
-                            
-# 154899900 is too high                      
-                    
-                    
-            
-            
-            
