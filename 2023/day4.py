@@ -44,26 +44,19 @@ print(f"The large pile of colorful cards are worth {sum(card_points)} points tot
             
 # Part 2 solution
 
-data = """Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
-Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
-Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
-Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
-Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
-Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11""".split('\n')
+# data = """Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+# Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
+# Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
+# Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
+# Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
+# Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11""".split('\n')
 
-# cards = {}
-# for line in data:
-#     card_id = int(line.split(':')[0].split()[1])
-#     numbers = line.split(':')[1]
-#     winning_numbers, numbers_I_have = numbers.split('|')
-#     winning_numbers = winning_numbers.strip().split()
-#     numbers_I_have = numbers_I_have.strip().split()
-#     cards[card_id] = {'win': winning_numbers, 'have': numbers_I_have}
+# We start with 1 copy of each card
+cards_won = [1 for line in data]
 
-cards_won_dict = {} # Key of card id: value is the list of cards won
-cards_won_list = []
-for line in data:
-    card_id = int(line.split(':')[0].split()[1])
+# Begin iterating through the cards
+for i,line in enumerate(data):
+    
     numbers = line.split(':')[1]
     winning_numbers, numbers_I_have = numbers.split('|')
     winning_numbers = winning_numbers.strip().split()
@@ -72,12 +65,15 @@ for line in data:
     for n in numbers_I_have:
         if n in winning_numbers:
             matches += 1
-    if matches > 0:
-        cards_won_dict[card_id] = [card for card in range(card_id+1,card_id+matches+1)]
-    else:
-        cards_won_dict[card_id] = []
-    cards_won_list.append(matches)
+    # For each match, the current card i wins a copy of card i + N_match.
+    # So we need to update the card counts for each copy.
+    # However, we don't just update them by 1 because your x copies of card 2
+    # will win the next two cards. So we have to increase the next two card
+    # counts by x copies of card 2.
+    for m in range(i+1,i+1+matches):
+        cards_won[m] += cards_won[i]
 
+print(f"We end up with {sum(cards_won)} total scratchcards")
 
         
         
