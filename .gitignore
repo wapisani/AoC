@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Advent of Code
+input_day*.txt
+
 # C extensions
 *.so
 
